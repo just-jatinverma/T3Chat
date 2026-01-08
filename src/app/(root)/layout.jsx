@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { currentUser } from "@/modules/authentication/actions";
 import ChatSidebar from "@/modules/chat/components/chat-sidebar";
+import Header from "@/modules/chat/components/header";
 import { redirect } from "next/dist/server/api-utils";
 import { headers } from "next/headers";
 import React from "react";
@@ -19,7 +20,7 @@ const Layout = async ({ children }) => {
     <div className="flex h-screen overflow-hidden">
       <ChatSidebar user={user} />
       <main className="flex-1 overflow-hidden">
-        {/* <Header /> */}
+        <Header />
         {children}
       </main>
     </div>
