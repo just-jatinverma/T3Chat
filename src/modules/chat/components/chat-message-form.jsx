@@ -5,10 +5,18 @@ import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
+import { useAIModels } from "@/modules/ai-agent/hook/ai-agent";
 import { toast } from "sonner";
+import { ModelSelector } from "./model-selector";
+// import { useCreateChat } from "../hooks/chat";
 
-const ChatMessageForm = ({ initialMessage, onMessageChange }) => {
+export default function ChatMessageForm({ initialMessage, onMessageChange }) {
+  const { data: models, isPending, error } = useAIModels();
+
   const [message, setMessage] = useState("");
+
+  const [selectedModel, setSelectedModel] = useState(models?.models[0].id);
+  // const { mutateAsync, isPending: isChatPending } = useCreateChat();
 
   useEffect(() => {
     if (initialMessage) {
@@ -20,8 +28,8 @@ const ChatMessageForm = ({ initialMessage, onMessageChange }) => {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      // await mutateAsync({ content: message, model: selectedModel });
       console.log("message sent");
+      // await mutateAsync({ content: message, model: selectedModel });
       toast.success("Message sent successfully");
     } catch (error) {
       console.error("Error sending message:", error);
@@ -53,8 +61,7 @@ const ChatMessageForm = ({ initialMessage, onMessageChange }) => {
           {/* Toolbar */}
           <div className="flex items-center justify-between gap-2 px-3 py-2 border-t ">
             {/* Left side tools */}
-            <Button variant={"outline"}>Select Model</Button>
-            {/* <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1">
               {isPending ? (
                 <>
                   <Spinner />
@@ -67,7 +74,7 @@ const ChatMessageForm = ({ initialMessage, onMessageChange }) => {
                   className="ml-1"
                 />
               )}
-            </div> */}
+            </div>
 
             {/* Submit Button */}
             <Button
@@ -77,9 +84,9 @@ const ChatMessageForm = ({ initialMessage, onMessageChange }) => {
               variant={message.trim() ? "default" : "ghost"}
               className="h-8 w-8 p-0 rounded-full "
               aria-label="Send message"
-              // title={
-              //   message.trim() ? "Send message" : "Enter a message to enable"
-              // }
+              title={
+                message.trim() ? "Send message" : "Enter a message to enable"
+              }
             >
               <Send className="h-4 w-4" />
               <span className="sr-only">Send message</span>
@@ -89,6 +96,4 @@ const ChatMessageForm = ({ initialMessage, onMessageChange }) => {
       </form>
     </div>
   );
-};
-
-export default ChatMessageForm;
+}
