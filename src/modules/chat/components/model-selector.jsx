@@ -34,9 +34,17 @@ export function ModelSelector({
   const selectedModel = models.find((m) => m.id === selectedModelId);
 
   const formatContextLength = (length) => {
-    if (length >= 1000000) return `${(length / 1000000).toFixed(1)}M`;
-    if (length >= 1000) return `${(length / 1000).toFixed(0)}K`;
-    return length.toString();
+    if (!length) return "N/A";
+
+    const numericLength = Number(length);
+    if (isNaN(numericLength)) return "N/A";
+
+    if (numericLength >= 1000000)
+      return `${(numericLength / 1000000).toFixed(1)}M`;
+
+    if (numericLength >= 1000) return `${(numericLength / 1000).toFixed(0)}K`;
+
+    return numericLength.toString();
   };
 
   const isFreeModel = (model) => {
@@ -185,7 +193,7 @@ export function ModelSelector({
               Detailed information about this AI model
             </DialogDescription>
           </DialogHeader>
-          <ScrollArea className="flex-1 pr-4">
+          <ScrollArea className="pr-4 h-100">
             {selectedForDetails && (
               <div className="space-y-6">
                 {/* Description */}
