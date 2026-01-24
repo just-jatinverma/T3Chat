@@ -30,13 +30,7 @@ import { ModelSelector } from "./model-selector";
 import { useAIModels } from "@/modules/ai-agent/hook/ai-agent";
 import { useChatStore } from "../store/chat-store";
 import { useSearchParams, useRouter } from "next/navigation";
-import {
-  GlobeIcon,
-  RotateCcwIcon,
-  StopCircleIcon,
-  ExternalLinkIcon,
-  SearchIcon,
-} from "lucide-react";
+import { RotateCcwIcon, StopCircleIcon } from "lucide-react";
 
 export default function MessageViewWithForm({ chatId }) {
   const { data: models, isPending: isModelLoading } = useAIModels();
