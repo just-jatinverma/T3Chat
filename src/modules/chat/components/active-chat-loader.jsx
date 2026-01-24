@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useGetChatById } from "@/modules/chat/hooks/chat";
 import { useChatStore } from "@/modules/chat/store/chat-store";
 
