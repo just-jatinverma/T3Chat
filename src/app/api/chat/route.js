@@ -79,7 +79,7 @@ export async function POST(req) {
     // We need to ensure only valid messages are converted
     let modelMessages;
     try {
-      modelMessages = convertToModelMessages(allUIMessages);
+      modelMessages = await convertToModelMessages(allUIMessages);
       console.log("✅ Converted to model messages:", modelMessages.length);
     } catch (conversionError) {
       console.error("❌ Message conversion error:", conversionError);
