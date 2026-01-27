@@ -7,6 +7,8 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import React from "react";
 
+export const dynamic = "force-dynamic";
+
 const Layout = async ({ children }) => {
   const session = await auth.api.getSession({
     headers: await headers(),
