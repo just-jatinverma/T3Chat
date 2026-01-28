@@ -3,6 +3,8 @@ import { CHAT_SYSTEM_PROMPT } from "@/lib/prompt";
 import db from "@/lib/db";
 import { MessageRole } from "@prisma/client";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 const provider = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -47,6 +49,18 @@ function extractPartsAsJSON(message) {
 
 export async function POST(req) {
   try {
+    // Auth check — reject unauthenticated requests
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     const {
       chatId,
       messages: newMessages,
@@ -63,27 +77,18 @@ export async function POST(req) {
 
     const uiMessages = previousMessages
       .map(convertStoredMessageToUI)
-      .filter((msg) => msg !== null); // Remove invalid messages
+      .filter((msg) => msg !== null);
 
     const normalizedNewMessages = Array.isArray(newMessages)
       ? newMessages
       : [newMessages];
 
-    console.log("📊 Previous messages:", uiMessages.length);
-    console.log("📊 New messages:", normalizedNewMessages.length);
-
-    // ✅ FIXED: Combine messages properly
     const allUIMessages = [...uiMessages, ...normalizedNewMessages];
 
-    // ✅ CRITICAL FIX: convertToModelMessages might fail with tool parts
-    // We need to ensure only valid messages are converted
     let modelMessages;
     try {
       modelMessages = await convertToModelMessages(allUIMessages);
-      console.log("✅ Converted to model messages:", modelMessages.length);
     } catch (conversionError) {
-      console.error("❌ Message conversion error:", conversionError);
-
       modelMessages = allUIMessages
         .map((msg) => ({
           role: msg.role,
@@ -92,17 +97,9 @@ export async function POST(req) {
             .map((p) => p.text)
             .join("\n"),
         }))
-        .filter((m) => m.content); // Remove empty messages
-
-      console.log("⚠️ Using fallback conversion:", modelMessages.length);
+        .filter((m) => m.content);
     }
 
-    console.log(
-      "🤖 Final model messages:",
-      JSON.stringify(modelMessages, null, 2),
-    );
-
-    // ✅ FIXED: Proper streamText configuration
     const result = streamText({
       model: provider.chat(model),
       messages: modelMessages,
@@ -133,7 +130,6 @@ export async function POST(req) {
             }
           }
 
-          // Save assistant response
           if (responseMessage?.parts && responseMessage.parts.length > 0) {
             const assistantPartsJSON = extractPartsAsJSON(responseMessage);
 
@@ -152,21 +148,15 @@ export async function POST(req) {
             });
           }
         } catch (error) {
-          console.error("❌ Error saving messages:", error);
+          console.error("Error saving messages:", error);
         }
       },
     });
   } catch (error) {
-    console.error("❌ API Route Error:", error);
-    return new Response(
-      JSON.stringify({
-        error: error.message || "Internal server error",
-        details: error.toString(),
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      },
-    );
+    console.error("API Route Error:", error);
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
