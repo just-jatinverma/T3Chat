@@ -5,68 +5,6 @@ import { currentUser } from "@/modules/authentication/actions";
 import { MessageRole, MessageType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
-export const createMessageInChat = async (values, chatId) => {
-  const user = await currentUser();
-
-  if (!user) {
-    return {
-      success: false,
-      message: "Unauthorized user",
-    };
-  }
-
-  const { content, model } = values;
-
-  if (!content || content.trim() === "") {
-    return {
-      success: false,
-      message: "Message content is required",
-    };
-  }
-
-  const userMessage = await db.message.create({
-    data: {
-      model,
-      content,
-      messageRole: MessageRole.USER,
-      messageType: MessageType.NORMAL,
-      chatId,
-    },
-  });
-
-  // Trigger Your AI here
-  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/chat`, {
-    method: "POST",
-    body: JSON.stringify({
-      chatId: chatId,
-      model: model,
-      content: content,
-    }),
-  });
-
-  const { text } = await res.json();
-
-  const Assistantmessage = await db.message.create({
-    data: {
-      model,
-      chatId: chatId,
-      content: text,
-      messageRole: MessageRole.ASSISTANT,
-      messageType: MessageType.NORMAL,
-    },
-  });
-
-  revalidatePath(`/chat/${chatId}`);
-  return {
-    success: true,
-    message: "Chat created successfully",
-    data: {
-      userMessage,
-      Assistantmessage,
-    },
-  };
-};
-
 export const createChatWithMessage = async (values) => {
   try {
     const user = await currentUser();
@@ -121,14 +59,13 @@ export const getAllChats = async () => {
         userId: user.id,
       },
       include: {
-        messages: true,
+        _count: { select: { messages: true } },
       },
       orderBy: {
         createdAt: "desc",
       },
     });
 
-    // revalidatePath("/");
     return {
       success: true,
       message: "Chats fetched successfully",
@@ -164,7 +101,6 @@ export const getChatById = async (chatId) => {
       },
     });
 
-    // console.log(JSON.stringify(chat , null, 2));
     return {
       success: true,
       message: "Chat fetched successfully",
