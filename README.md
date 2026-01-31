@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# T3 Chat
+
+An advanced AI chat application powered by OpenRouter.
+
+## Features
+
+*   **AI-Powered Chat:** Engage in intelligent conversations with an AI powered by OpenRouter.
+*   **User Authentication:** Secure user authentication with email/password and GitHub login.
+*   **Theming:** Switch between light and dark modes.
+*   **Real-time UI:** Built with Next.js and React for a fast and responsive user experience.
+*   **Styling with Tailwind CSS:** A utility-first CSS framework for rapid UI development.
+*   **Prisma ORM:** Modern database toolkit for PostgreSQL.
+
+## Tech Stack
+
+*   **Framework:** [Next.js](https://nextjs.org/)
+*   **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+*   **UI Components:** [Radix UI](https://www.radix-ui.com/) and [shadcn/ui](https://ui.shadcn.com/)
+*   **Authentication:** [better-auth](https://better-auth.dev/)
+*   **ORM:** [Prisma](https://www.prisma.io/)
+*   **Database:** [PostgreSQL](https://www.postgresql.org/)
+*   **AI:** [OpenRouter](https://openrouter.ai/)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+*   [Node.js](https://nodejs.org/en/) (v18 or later)
+*   [pnpm](https://pnpm.io/)
+*   [PostgreSQL](https://www.postgresql.org/download/)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+1.  **Clone the repository:**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+    ```bash
+    git clone https://github.com/your-username/t3-chat.git
+    cd t3-chat
+    ```
 
-## Learn More
+2.  **Install dependencies:**
 
-To learn more about Next.js, take a look at the following resources:
+    ```bash
+    pnpm install
+    ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3.  **Set up the database:**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    *   Make sure your PostgreSQL server is running.
+    *   Run the Prisma migrations to create the database schema:
 
-## Deploy on Vercel
+    ```bash
+    pnpm prisma migrate dev
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4.  **Set up environment variables:**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+    Create a `.env.local` file in the root of the project and add the following environment variables:
+
+    ```env
+    # Database
+    DATABASE_URL="postgresql://user:password@host:port/database"
+
+    # Authentication
+    NEXT_PUBLIC_APP_URL="http://localhost:3000"
+    GITHUB_CLIENT_ID="your_github_client_id"
+    GITHUB_CLIENT_SECRET="your_github_client_secret"
+
+    # OpenRouter
+    OPENROUTER_API_KEY="your_openrouter_api_key"
+    ```
+
+5.  **Run the development server:**
+
+    ```bash
+    pnpm dev
+    ```
+
+    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
